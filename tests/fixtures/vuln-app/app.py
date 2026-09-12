@@ -7,7 +7,31 @@ app = Flask(__name__)
 
 @app.get("/")
 def index():
-    return "<h1>hi</h1>", 200, {"Content-Type": "text/html"}
+    return (
+        '<h1>hi</h1><a href="/search?q=test">s</a><a href="/item?id=1">i</a>'
+        '<a href="/admin">a</a>',
+        200,
+        {"Content-Type": "text/html"},
+    )
+
+
+@app.get("/admin")
+def admin():
+    # exposed admin panel fixture (200 = interesting for dirs probe)
+    return "<h1>admin panel</h1>", 200, {"Content-Type": "text/html"}
+
+
+@app.get("/server-status")
+def server_status():
+    # exposed internal page fixture (403 = interesting for dirs probe)
+    return "forbidden", 403
+
+
+@app.after_request
+def _cors_wild(resp):
+    # intentionally lax CORS fixture
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    return resp
 
 
 @app.get("/search")
